@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="BitCrusher.cs" />
+    <Compile Remove="Chorus.cs" />
+    <Compile Remove="Distortion.cs" />
+    <Compile Remove="Effect.cs" />
+    <Compile Remove="Generator.cs" />
+    <Compile Remove="IIRFilter.cs" />
+    <Compile Remove="Oscillator.cs" />
+    <Compile Remove="WaveShape.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.Core" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scale\" />
+    <Folder Include="Tuning\" />
+    <Folder Include="Pattern\" />
+    <Folder Include="Operators\" />
+    <Folder Include="Util\" />
+  </ItemGroup>
+
+</Project>
