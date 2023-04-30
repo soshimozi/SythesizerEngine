@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -29,7 +30,7 @@ public class Lag : Node
     private double _lastValue = 0;
     private readonly double log001;
 
-    public Lag(Provider provider, double value = 0, double lagTime = 1) : base(provider, 2, 1)
+    public Lag(IAudioProvider provider, double value = 0, double lagTime = 1) : base(provider, 2, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
@@ -40,7 +41,7 @@ public class Lag : Node
 
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
@@ -48,7 +49,7 @@ public class Lag : Node
 
         var value = _value.GetValue();
         var lag = _lag.GetValue();
-        var coefficient = Math.Exp(log001 / (lag * AudioProvider.WaveFormat.SampleRate));
+        var coefficient = Math.Exp(log001 / (lag * AudioProvider.SampleRate));
 
         var outputValue = ((1 - coefficient) * value) +
                           (coefficient * _lastValue);

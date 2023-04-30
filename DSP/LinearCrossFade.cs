@@ -1,19 +1,20 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
 public class LinearCrossFade : Node
 {
     private readonly Automation _position;
-    public LinearCrossFade(Provider audioProvider, double position = 0.5) : base(audioProvider, 3, 1)
+    public LinearCrossFade(IAudioProvider audioProvider, double position = 0.5) : base(audioProvider, 3, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
         _position = new Automation(this, 2, 0.5);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var inputA = Inputs[0];
         var inputB = Inputs[1];

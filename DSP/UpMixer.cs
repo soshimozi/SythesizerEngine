@@ -1,15 +1,16 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
 public class UpMixer : Node
 {
-    public UpMixer(Provider provider, int outputChannels) : base(provider, 1, 1)
+    public UpMixer(IAudioProvider provider) : base(provider, 1, 1)
     {
-        Outputs[0].NumberChannels = outputChannels;
+        Outputs[0].Channels = provider.Channels;
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
@@ -32,10 +33,5 @@ public class UpMixer : Node
                     output.Samples[i] = input.Samples[i % numberOfInputChannels];
             }
         }
-    }
-
-    public override string ToString()
-    {
-        return "UpMixer";
     }
 }

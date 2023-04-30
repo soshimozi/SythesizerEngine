@@ -1,61 +1,54 @@
-﻿namespace SynthesizerEngine.Core.Audio;
+﻿using SynthesizerEngine.Core.Audio.Interface;
 
+namespace SynthesizerEngine.Core.Audio;
 
-public class OutputChannel
+public class OutputChannel : IChannel
 {
-    public Node Node { get; }
+    public IAudioNode Node { get; }
     public int Index { get; }
-    public List<InputChannel> ConnectedTo { get; }
+    public List<IChannel> Connected { get; }
     public List<double> Samples { get; set; }
 
-    private InputChannel? _linkedInput;
+    private IChannel? _linkedInput;
 
-    public int NumberChannels
+    public int Channels
     {
         set => _numberChannels = value;
+        get => GetNumberOfChannels();
     }
 
     private int _numberChannels;
 
-    public OutputChannel(Node node, int index)
+    public OutputChannel(IAudioNode node, int index)
     {
         Node = node;
         Index = index;
-        ConnectedTo = new List<InputChannel>();
+        Connected = new List<IChannel>();
         Samples = new List<double>();
 
         _linkedInput = null;
         _numberChannels = 1;
     }
 
-    public void Connect(InputChannel input)
+    public void Connect(IChannel input)
     {
-        ConnectedTo.Add(input);
+        Connected.Add(input);
     }
 
-    public void Disconnect(InputChannel input)
+    public void Disconnect(IChannel input)
     {
-        ConnectedTo.Remove(input);
+        Connected.Remove(input);
     }
 
-    public void LinkNumberOfChannels(InputChannel input)
+    public void LinkNumberOfChannels(IChannel input)
     {
         _linkedInput = input;
     }
 
-    public void UnlinkNumberOfChannels()
-    {
-        _linkedInput = null;
-    }
 
-    public int GetNumberOfChannels()
+    private int GetNumberOfChannels()
     {
-        return _linkedInput?.ConnectedFrom.Count > 0 ? _linkedInput.Samples.Count : _numberChannels;
+        var samples = _linkedInput?.Samples.Count ?? 0;
+        return _linkedInput?.Connected.Count > 0 ? samples : _numberChannels;
     }
-
-    public override string ToString()
-    {
-        return $"{Node}Output #{Index} - ";
-    }
-
 }

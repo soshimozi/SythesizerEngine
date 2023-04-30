@@ -1,6 +1,7 @@
 ﻿using NAudio.Wave;
 using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -9,7 +10,7 @@ public class Compressor : Node
     private readonly Automation _scaleBy;
     private readonly Automation _gain;
 
-    public Compressor(Provider provider, double gain = 0.5, uint scaleBy = 1) : base(provider, 3, 1)
+    public Compressor(IAudioProvider provider, double gain = 0.5, uint scaleBy = 1) : base(provider, 3, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
@@ -17,7 +18,7 @@ public class Compressor : Node
         _scaleBy = new Automation(this, 2, scaleBy);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

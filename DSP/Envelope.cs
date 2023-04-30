@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -22,7 +23,7 @@ public class Envelope : Node
 
     public event EventHandler<EventArgs>? Complete;
 
-    protected Envelope(Provider provider, double? gate, IReadOnlyList<double> levels, IReadOnlyList<double> times, int? releaseStage = null)
+    protected Envelope(IAudioProvider provider, double? gate, IReadOnlyList<double> levels, IReadOnlyList<double> times, int? releaseStage = null)
         : base(provider, 1, 1)
     {
         Gate = new Automation(this, 0, gate ?? 1);
@@ -50,7 +51,7 @@ public class Envelope : Node
         _gateOn = false;
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var gate = Gate.GetValue();
         var stageChanged = false;
@@ -124,13 +125,13 @@ public class Envelope : Node
     private double CalculateDelta(int newStage, double newLevel)
     {
         var newDelta = _levels[newStage + 1].GetValue() - newLevel;
-        var stageTime = _times[newStage].GetValue() *  AudioProvider.WaveFormat.SampleRate;
+        var stageTime = _times[newStage].GetValue() *  AudioProvider.SampleRate;
         return (newDelta / stageTime);
     }
 
     private int CalculateChangeTime(int stage, int time)
     {
-        var stageTime = _times[stage].GetValue() * AudioProvider.WaveFormat.SampleRate;
+        var stageTime = _times[stage].GetValue() * AudioProvider.SampleRate;
         return (int)(time + stageTime);
     }
 

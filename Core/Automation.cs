@@ -1,16 +1,15 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Core;
 
 public class Automation
 {
-    private Node _node;
-    private readonly InputChannel? _input;
+    private readonly IChannel? _input;
     private double _value;
 
-    public Automation(Node node, int? inputIndex = null, double value = 0)
+    public Automation(IAudioNode node, int? inputIndex = null, double value = 0)
     {
-        _node = node;
         _input = inputIndex.HasValue ? node.Inputs[inputIndex.Value] : null;
         _value = value;
     }

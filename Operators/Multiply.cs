@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
@@ -7,13 +8,13 @@ public class Multiply : Node
 {
     protected readonly Automation Value;
 
-    public Multiply(Provider provider, double value = 1) : base(provider, 2, 1)
+    protected Multiply(IAudioProvider provider, double value = 1) : base(provider, 2, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
         Value = new Automation(this, 1, value);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var  value = Value.GetValue();
         var input = Inputs[0];

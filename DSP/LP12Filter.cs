@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -16,7 +17,7 @@ public class LP12Filter : Node
     private double _vibraSpeed = 0;
     private double _vibraPos = 0;
 
-    public LP12Filter(Provider provider, double cutoff = 20000, double resonance = 1) : base(provider, 3, 1)
+    public LP12Filter(IAudioProvider provider, double cutoff = 20000, double resonance = 1) : base(provider, 3, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
@@ -29,7 +30,7 @@ public class LP12Filter : Node
         _previousResonance = resonance;
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
@@ -56,7 +57,7 @@ public class LP12Filter : Node
 
     private void CalcCoefficients()
     {
-        w = Math.PI * 2 * _cutoff.GetValue() / AudioProvider.WaveFormat.SampleRate;
+        w = Math.PI * 2 * _cutoff.GetValue() / AudioProvider.SampleRate;
         q = 1.0 - w / (2 * (_resonance.GetValue() + 0.5 / (1.0 + w)) + w - 2);
         r = q * q;
         c = r + 1 - 2 * Math.Cos(w) * q;

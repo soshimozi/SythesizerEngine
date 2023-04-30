@@ -1,15 +1,16 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
 public class SoftClip : Node
 {
-    public SoftClip(Provider provider) : base(provider, 1, 1)
+    public SoftClip(IAudioProvider provider) : base(provider, 1, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

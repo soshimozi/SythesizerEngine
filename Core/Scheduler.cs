@@ -1,4 +1,5 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 using SynthesizerEngine.Pattern;
 using SynthesizerEngine.Util;
 
@@ -17,7 +18,7 @@ public class Scheduler : PassThroughNode
     private double _lastBeatTime;
     private double _beatLength;
 
-    public Scheduler(Provider lib, int bpm = 120) : base(lib, 1, 1)
+    public Scheduler(IAudioProvider provider, int bpm = 120) : base(provider, 1, 1)
     {
         _bpm = bpm;
         _queue = new BinaryHeapPriorityQueue<SchedulerEvent>((a, b) => a.Time.CompareTo(b.Time));
@@ -30,13 +31,13 @@ public class Scheduler : PassThroughNode
         _beatsPerBar = 0;
 
         _lastBeatTime = 0;
-        _beatLength = 60 / _bpm * AudioProvider.WaveFormat.SampleRate;
+        _beatLength = 60 / _bpm * AudioProvider.SampleRate;
     }
 
     public void SetTempo(int bpm)
     {
         _bpm = bpm;
-        _beatLength = 60 / _bpm * AudioProvider.WaveFormat.SampleRate;
+        _beatLength = 60 / _bpm * AudioProvider.SampleRate;
     }
 
     SchedulerEvent AddRelative(int beats, Action<List<object>>? callback = null)
@@ -61,7 +62,7 @@ public class Scheduler : PassThroughNode
 
     public SchedulerEvent Play(List<PatternBase> patterns, object? durationPattern, Action<List<object>>? callback)
     {
-        var newEvent = new SchedulerEvent(AudioProvider.GetWriteTime(), callback, patterns, durationPattern);
+        var newEvent = new SchedulerEvent(AudioProvider.TotalWriteTime, callback, patterns, durationPattern);
         _queue.Enqueue(newEvent);
         return newEvent;
     }
@@ -107,7 +108,7 @@ public class Scheduler : PassThroughNode
     private void TickClock()
     {
         _time += 1;
-        _seconds = _time / AudioProvider.WaveFormat.SampleRate;
+        _seconds = _time / AudioProvider.SampleRate;
 
         if (!(_time >= _lastBeatTime + _beatLength)) return;
 

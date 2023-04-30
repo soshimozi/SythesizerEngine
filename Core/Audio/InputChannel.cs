@@ -1,37 +1,49 @@
-﻿namespace SynthesizerEngine.Core.Audio;
+﻿using SynthesizerEngine.Core.Audio.Interface;
+
+namespace SynthesizerEngine.Core.Audio;
 
 
-public class InputChannel
+public class InputChannel : IChannel
 {
-    public Node Node { get; }
+    public IAudioNode Node { get; }
     public int Index { get; }
-    public List<OutputChannel> ConnectedFrom { get; }
-    public List<double> Samples { get; private set; }
+    public List<IChannel> Connected { get; }
+    public int Channels { get; set; }
+    public int TotalWriteTime { get; }
+    public List<double> Samples { get; set; }
 
-    public InputChannel(Node node, int index)
+    public InputChannel(IAudioNode node, int index)
     {
         Node = node;
         Index = index;
-        ConnectedFrom = new List<OutputChannel>();
+        Connected = new List<IChannel>();
         Samples = new List<double>();
     }
 
-    public void Connect(OutputChannel output)
+    public void Connect(IChannel output)
     {
-        ConnectedFrom.Add(output);
+        Connected.Add(output);
     }
 
-    public void Disconnect(OutputChannel output)
+    public void Disconnect(IChannel output)
     {
-        ConnectedFrom.Remove(output);
-        if (ConnectedFrom.Count == 0)
+        Connected.Remove(output);
+        if (Connected.Count == 0)
         {
             Samples = new List<double>();
         }
     }
 
-    public override string ToString()
+    public void LinkNumberOfChannels(IChannel input)
     {
-        return $"{Node}Input #{Index}";
+        throw new NotImplementedException();
+    }
+
+    public bool NeedTraverse { get; set; }
+    public int SampleRate { get; }
+
+    public int GetNumberOfChannels()
+    {
+        throw new NotImplementedException();
     }
 }

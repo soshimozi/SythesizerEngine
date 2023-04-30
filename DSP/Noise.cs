@@ -1,4 +1,5 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -6,13 +7,13 @@ public class Noise : Node
 {
     private readonly Random _random;
     private NoiseColor _color;
-    public Noise(Provider provider, NoiseColor color = NoiseColor.White) : base(provider, 0, 1)
+    public Noise(IAudioProvider provider, NoiseColor color = NoiseColor.White) : base(provider, 0, 1)
     {
         _random = new Random();
         Reset(color);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         //var nextValue = _random.NextDouble();
         Outputs[0].Samples[0] = (float) GetValue();
@@ -33,7 +34,7 @@ public class Noise : Node
         _c3 = 1 / _c1;
         _c1 = _c2 * 6;
         _c4 = 3 * (_c2 - 1);
-        _q0 = Math.Exp(-200 * Math.PI / AudioProvider.WaveFormat.SampleRate);
+        _q0 = Math.Exp(-200 * Math.PI / AudioProvider.SampleRate);
         _q1 = 1 - _q0;
     }
 

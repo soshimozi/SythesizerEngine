@@ -1,12 +1,12 @@
 ﻿namespace SynthesizerEngine.Tuning;
 
-public class Tuning
+public class TuningBase
 {
     private readonly List<double> _semitones;
     public double OctaveRatio { get;  }
     public List<double> Ratios { get; }
 
-    protected Tuning(List<double> semitones, double octaveRatio = 2)
+    protected TuningBase(List<double> semitones, double octaveRatio = 2)
     {
         _semitones = semitones;
         OctaveRatio = octaveRatio;

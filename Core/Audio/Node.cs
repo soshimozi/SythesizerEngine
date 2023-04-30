@@ -1,23 +1,26 @@
-﻿namespace SynthesizerEngine.Core.Audio;
+﻿using SynthesizerEngine.Core.Audio.Interface;
 
-public class Node
+namespace SynthesizerEngine.Core.Audio;
+
+public abstract class Node : IAudioNode
 {
-    public List<InputChannel> Inputs { get; }
-    public List<OutputChannel> Outputs { get; }
-    protected readonly Provider AudioProvider;
+    public IList<IChannel> Inputs { get; }
+    public IList<IChannel> Outputs { get; }
+
+    protected readonly IAudioProvider AudioProvider;
     private readonly Action _generate;
 
-    protected Node(Provider provider, int numberOfInputs, int numberOfOutputs, Action? generate = null)
+    protected Node(IAudioProvider provider, int numberOfInputs, int numberOfOutputs, Action? generate = null)
     {
         AudioProvider = provider;
 
-        Inputs = new List<InputChannel>();
+        Inputs = new List<IChannel>();
         for (var i = 0; i < numberOfInputs; i++)
         {
             Inputs.Add(new InputChannel(this, i));
         }
 
-        Outputs = new List<OutputChannel>();
+        Outputs = new List<IChannel>();
         for (var i = 0; i < numberOfOutputs; i++)
         {
             Outputs.Add(new OutputChannel(this, i));
@@ -31,9 +34,9 @@ public class Node
         }
     }
 
-    public virtual void Connect(Node node, int outputIndex = 0, int inputIndex = 0)
+    public virtual void Connect(IAudioNode node, int outputIndex = 0, int inputIndex = 0)
     {
-        if (node is Group nodeGroup)
+        if (node is GroupNode nodeGroup)
         {
             var outputPin = Outputs[outputIndex];
             node = nodeGroup.InputPassThroughNodes[inputIndex];
@@ -54,9 +57,9 @@ public class Node
         AudioProvider.NeedTraverse = true;
     }
 
-    public virtual void Disconnect(Node node, int output = 0, int input = 0)
+    public virtual void Disconnect(IAudioNode node, int output = 0, int input = 0)
     {
-        if (node is Group nodeGroup)
+        if (node is GroupNode nodeGroup)
         {
             var outputPin = Outputs[output];
             var newNode = nodeGroup.InputPassThroughNodes[input];
@@ -89,7 +92,7 @@ public class Node
         // Disconnect inputs
         foreach (var input in Inputs)
         {
-            foreach (var outputPin in input.ConnectedFrom)
+            foreach (var outputPin in input.Connected)
             {
                 var output = outputPin.Node;
                 output.Disconnect(this, outputPin.Index, input.Index);
@@ -99,7 +102,7 @@ public class Node
         // Disconnect outputs
         foreach (var output in Outputs)
         {
-            foreach (var inputPin in output.ConnectedTo)
+            foreach (var inputPin in output.Connected)
             {
                 var input = inputPin.Node;
                 Disconnect(input, output.Index, inputPin.Index);
@@ -107,18 +110,16 @@ public class Node
         }
     }
 
-    protected virtual void GenerateMix()
-    {
-    }
+    public abstract void GenerateMix();
 
-    protected void CreateInputSamples()
+    public virtual void CreateInputSamples()
     {
         foreach (var input in Inputs)
         {
             var numberOfInputChannels = 0;
 
             input.Samples.Clear();
-            foreach (var output in input.ConnectedFrom)
+            foreach (var output in input.Connected)
             {
                 for (var k = 0; k < output.Samples.Count; k++)
                 {
@@ -142,14 +143,14 @@ public class Node
         }
     }
 
-    protected virtual void CreateOutputSamples()
+    public virtual void CreateOutputSamples()
     {
 
         foreach (var output in Outputs)
         {
             output.Samples.Clear();
 
-            var numberOfChannels = output.GetNumberOfChannels();
+            var numberOfChannels = output.Channels;
             if (output.Samples.Count == numberOfChannels)
             {
                 continue;
@@ -168,7 +169,7 @@ public class Node
         }
     }
 
-    protected List<Node> Traverse(List<Node> nodes)
+    public List<IAudioNode> Traverse(List<IAudioNode> nodes)
     {
         if (nodes.Contains(this)) return nodes;
         nodes.Add(this);
@@ -176,16 +177,16 @@ public class Node
         return nodes;
     }
 
-    private List<Node> TraverseParents(List<Node> nodes)
+    private List<IAudioNode> TraverseParents(List<IAudioNode> nodes)
     {
         return Inputs
-            .SelectMany(input => input.ConnectedFrom)
+            .SelectMany(input => input.Connected)
             .Aggregate(nodes, (current, stream) => stream.Node.Traverse(current));
     }
 
     protected void SetNumberOfOutputChannels(int output, int numberOfChannels)
     {
-        Outputs[output].NumberChannels = numberOfChannels;
+        Outputs[output].Channels = numberOfChannels;
     }
 
     protected void LinkNumberOfOutputChannels(int output, int input)

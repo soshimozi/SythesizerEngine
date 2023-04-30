@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -34,7 +35,7 @@ public class Limiter : Node
     private readonly Automation _attack;
     private readonly Automation _release;
 
-    public Limiter(Provider provider, double threshold = 0.95, double attack = 0.01, double release = 0.4) :
+    public Limiter(IAudioProvider provider, double threshold = 0.95, double attack = 0.01, double release = 0.4) :
         base(provider, 4, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
@@ -44,16 +45,16 @@ public class Limiter : Node
         _release = new Automation(this, 2, release);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
 
         // Local processing variables
         var attack = Math.Pow(0.01, 1 / (_attack.GetValue() *
-                                         AudioProvider.WaveFormat.SampleRate));
+                                         AudioProvider.SampleRate));
         var release = Math.Pow(0.01, 1 / (_release.GetValue() *
-                                          AudioProvider.WaveFormat.SampleRate));
+                                          AudioProvider.SampleRate));
 
         var threshold = _threshold.GetValue();
 

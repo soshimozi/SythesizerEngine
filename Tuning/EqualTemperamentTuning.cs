@@ -1,8 +1,8 @@
 ﻿namespace SynthesizerEngine.Tuning;
 
-public class EqualTemperamentTuning : Tuning
+public class EqualTemperamentTuning : TuningBase
 {
-    public EqualTemperamentTuning(int pitchesPerOctave) : base(InitializeSemiToneList(pitchesPerOctave), 2)
+    public EqualTemperamentTuning(int pitchesPerOctave) : base(InitializeSemiToneList(pitchesPerOctave))
     {
     }
 

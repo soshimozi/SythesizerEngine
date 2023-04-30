@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -7,14 +8,14 @@ public class Pan : Node
 {
     private readonly Automation _pan;
 
-    protected Pan(Provider audioLib, double pan = 0.5) : base(audioLib, 2, 1)
+    protected Pan(IAudioProvider audioLib, double pan = 0.5) : base(audioLib, 2, 1)
     {
         // Hardcode two output channels
         SetNumberOfOutputChannels(0, 2);
         _pan = new Automation(this, 1, pan);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

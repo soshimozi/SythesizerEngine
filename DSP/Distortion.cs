@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -12,16 +13,16 @@ public class Distortion : Node
 
     private double _smpl;
 
-    public Distortion(Provider provider, double overdrive = 4, double masterGain = 1.0) : base(provider, 3, 1)
+    public Distortion(IAudioProvider provider, double overdrive = 4, double masterGain = 1.0) : base(provider, 3, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
         _overdrive = new Automation(this, 1, overdrive);
         _masterGain = new Automation(this, 2, masterGain);
 
-        var hpf1 = new IIRFilter(provider.WaveFormat.SampleRate, 720.484);
-        var lpf1 = new IIRFilter(provider.WaveFormat.SampleRate, 723.431);
-        var hpf2 = new IIRFilter(provider.WaveFormat.SampleRate, 1.0);
+        var hpf1 = new IIRFilter(provider.SampleRate, 720.484);
+        var lpf1 = new IIRFilter(provider.SampleRate, 723.431);
+        var hpf2 = new IIRFilter(provider.SampleRate, 1.0);
 
 
         _filters[0] = hpf1;
@@ -30,7 +31,7 @@ public class Distortion : Node
 
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         
         var input = Inputs[0];

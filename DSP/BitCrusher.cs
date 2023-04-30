@@ -1,18 +1,19 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
 public class BitCrusher : Node
 {
     private readonly Automation _bits;
-    public BitCrusher(Provider provider, int bits = 8) : base(provider, 2, 1)
+    public BitCrusher(IAudioProvider provider, int bits = 8) : base(provider, 2, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
         _bits = new Automation(this, 1, bits);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
 

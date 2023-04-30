@@ -1,4 +1,5 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Core;
 
@@ -18,9 +19,14 @@ public class PassThroughNode : Node
     /// <param name="provider">the audio provider object</param>
     /// <param name="numberOfInputs">the number of inputs</param>
     /// <param name="numberOfOutputs">the number of outputs</param>
-    public PassThroughNode(Provider provider, int numberOfInputs, int numberOfOutputs)
+    public PassThroughNode(IAudioProvider provider, int numberOfInputs, int numberOfOutputs)
         : base(provider, numberOfInputs, numberOfOutputs)
     {
+    }
+
+    public override void GenerateMix()
+    {
+        // do nothing
     }
 
     /// <summary>
@@ -30,7 +36,7 @@ public class PassThroughNode : Node
     ///
     /// 
     /// </summary>
-    protected override void CreateOutputSamples()
+    public  override void CreateOutputSamples()
     {
         var numberOfOutputs = Outputs.Count;
         for (var i = 0; i < numberOfOutputs; i++)
@@ -44,7 +50,7 @@ public class PassThroughNode : Node
             }
             else
             {
-                var numberOfChannels = output.GetNumberOfChannels();
+                var numberOfChannels = output.Channels;
                 if (output.Samples.Count == numberOfChannels)
                 {
                     continue;

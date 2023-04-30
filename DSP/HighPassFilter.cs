@@ -1,17 +1,18 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
 public class HighPassFilter : BiquadFilter
 {
-    protected HighPassFilter(Provider provider, double frequency) : base(provider, frequency)
+    protected HighPassFilter(IAudioProvider provider, double frequency) : base(provider, frequency)
     {
     }
 
     protected override void CalculateCoefficients(float frequency)
     {
         var w0 = 2 * Math.PI * frequency /
-                 AudioProvider.WaveFormat.SampleRate;
+                 AudioProvider.SampleRate;
         var cosw0 = Math.Cos(w0);
         var sinw0 = Math.Sin(w0);
         var alpha = sinw0 / (2 / Math.Sqrt(2));

@@ -1,16 +1,17 @@
 ﻿using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
 public class Tanh : Node
 {
 
-    public Tanh(Provider provider) : base(provider, 1, 1)
+    public Tanh(IAudioProvider provider) : base(provider, 1, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var numberOfChannels = input.Samples.Count;

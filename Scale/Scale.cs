@@ -1,24 +1,17 @@
-﻿using SynthesizerEngine.Scale;
+﻿using SynthesizerEngine.Core.Audio.Interface;
+using SynthesizerEngine.Scale;
 using SynthesizerEngine.Tuning;
 
 namespace SynthesizerEngine.Scale;
 
-public class Scale
+public class Scale : IScale
 {
     private readonly List<int> _degrees;
-    private readonly Tuning.Tuning _tuning;
+    private readonly TuningBase _tuning;
 
-    public Scale(List<int> degrees, Tuning.Tuning? tuning = null)
+    protected Scale(List<int> degrees, TuningBase? tuning = null)
     {
-        if (tuning == null)
-        {
-            _tuning =  new EqualTemperamentTuning(12);
-        }
-        else
-        {
-            _tuning = tuning;
-        }
-
+        _tuning = tuning ?? new EqualTemperamentTuning(12);
         _degrees = degrees;
     }
 

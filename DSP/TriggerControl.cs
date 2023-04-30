@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -7,12 +8,12 @@ public class TriggerControl : Node
 {
     private readonly Automation _trigger;
 
-    public TriggerControl(Provider provider, double trigger = 0) : base(provider, 0, 1)
+    public TriggerControl(IAudioProvider provider, double trigger = 0) : base(provider, 0, 1)
     {
         _trigger = new Automation(this, null, trigger);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         if (_trigger.GetValue() > 0)
         {

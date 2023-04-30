@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -27,7 +28,7 @@ public class Reverb : Node
     private readonly List<double[]> _allPassBuffers;
     private readonly List<int> _allPassIndices;
 
-    public Reverb(Provider provider, double? mix = null, double? roomSize = null, double? damping = null)
+    public Reverb(IAudioProvider provider, double? mix = null, double? roomSize = null, double? damping = null)
         : base(provider, 4, 1)
     {
         // Parameters: for 44.1k or 48k
@@ -64,7 +65,7 @@ public class Reverb : Node
         }
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var mix = _mix.GetValue();
         var roomSize = _roomSize.GetValue();

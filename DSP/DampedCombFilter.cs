@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -15,7 +16,7 @@ public class DampedCombFilter: Node
     private readonly double _maximumDelayTime;
     private int _readWriteIndex;
 
-    protected DampedCombFilter(Provider provider, double maximumDelayTime, double delayTime = 1, double decayTime = 0, double damping = 0) : base(provider, 4, 1)
+    protected DampedCombFilter(IAudioProvider provider, double maximumDelayTime, double delayTime = 1, double decayTime = 0, double damping = 0) : base(provider, 4, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
@@ -30,13 +31,13 @@ public class DampedCombFilter: Node
 
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
 
-        var delayTime = _delayTime.GetValue() * AudioProvider.WaveFormat.SampleRate;
-        var decayTime = _decayTime.GetValue() * AudioProvider.WaveFormat.SampleRate;
+        var delayTime = _delayTime.GetValue() * AudioProvider.SampleRate;
+        var decayTime = _decayTime.GetValue() * AudioProvider.SampleRate;
         var damping = _damping.GetValue();
         var feedback = Math.Exp(-3 * delayTime / decayTime);
 
@@ -45,7 +46,7 @@ public class DampedCombFilter: Node
         {
             if (i >= _buffers.Count)
             {
-                var bufferSize = (int) _maximumDelayTime * AudioProvider.WaveFormat.SampleRate;
+                var bufferSize = (int) (_maximumDelayTime * AudioProvider.SampleRate);
                 _buffers.Add(new double[bufferSize]);
             }
 

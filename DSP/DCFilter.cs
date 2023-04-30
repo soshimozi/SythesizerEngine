@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -10,7 +11,7 @@ public class DCFilter : Node
     // Delayed values
     private readonly List<double> _xValues = new List<double>();
     private readonly List<double> _yValues = new List<double>();
-    public DCFilter(Provider provider, double coefficient = 0.995) : base(provider, 2, 1)
+    public DCFilter(IAudioProvider provider, double coefficient = 0.995) : base(provider, 2, 1)
     {
         // Same number of output channels as input channels
         LinkNumberOfOutputChannels(0, 0);
@@ -18,7 +19,7 @@ public class DCFilter : Node
         _coefficient = new Automation(this, 1, coefficient);
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var coefficient = _coefficient.GetValue();
         var input = Inputs[0];

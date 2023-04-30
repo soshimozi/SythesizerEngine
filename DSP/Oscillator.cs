@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -13,7 +14,7 @@ public class Oscillator : Node
 
     private WaveShape _waveform;
 
-    public Oscillator(Provider audioLib, float frequency = 440, WaveShape waveForm = WaveShape.Sine, float pulseWidth = 0.5f) : base(audioLib, 2, 1)
+    public Oscillator(IAudioProvider provider, float frequency = 440, WaveShape waveForm = WaveShape.Sine, float pulseWidth = 0.5f) : base(provider, 2, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
 
@@ -30,7 +31,7 @@ public class Oscillator : Node
         _waveform = waveform;
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var output = Outputs[0];
 
@@ -39,7 +40,7 @@ public class Oscillator : Node
 
         output.Samples[0] = GetMix();
 
-        _phase = (_phase + frequency / AudioProvider.WaveFormat.SampleRate / 2) % 1;
+        _phase = (_phase + frequency / AudioProvider.SampleRate / 2) % 1;
         var p = (_phase) % 1;
         _p = p < pulseWidth ? p / pulseWidth : (p - pulseWidth) / (1 - pulseWidth);
     }

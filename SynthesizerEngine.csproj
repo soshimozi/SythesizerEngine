@@ -18,10 +18,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Core\Audio\Node.cs~RF3a3468a3.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NAudio.Core" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Core\Audio\Interface\" />
     <Folder Include="Scale\" />
     <Folder Include="Tuning\" />
     <Folder Include="Pattern\" />

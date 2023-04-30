@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -13,7 +14,7 @@ public class FeedbackDelay : Node
     private readonly List<double[]> _buffers;
     private int _readWriteIndex;
 
-    public FeedbackDelay(Provider provider, float maximumDelayTime, float delayTime = 1, float feedback = 0.5f, float mix = 1)
+    public FeedbackDelay(IAudioProvider provider, float maximumDelayTime, float delayTime = 1, float feedback = 0.5f, float mix = 1)
         : base(provider, 4, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
@@ -26,13 +27,13 @@ public class FeedbackDelay : Node
         _readWriteIndex = 0;
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
 
         
-        var delayTime = _delayTime.GetValue() * AudioProvider.WaveFormat.SampleRate;
+        var delayTime = _delayTime.GetValue() * AudioProvider.SampleRate;
         var feedback = _feedback.GetValue();
         var mix = _mix.GetValue();
 
@@ -42,7 +43,7 @@ public class FeedbackDelay : Node
         {
             if (i >= numberOfBuffers)
             {
-                var bufferSize = (int)(_maximumDelayTime * AudioProvider.WaveFormat.SampleRate);
+                var bufferSize = (int)(_maximumDelayTime * AudioProvider.SampleRate);
                 _buffers.Add(new double[bufferSize]);
             }
 

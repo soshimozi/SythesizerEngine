@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core;
 using SynthesizerEngine.Core.Audio;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -21,7 +22,7 @@ public class BiquadFilter : Node
     protected double A1;
     protected double A2;
 
-    protected BiquadFilter(Provider provider, double frequency = 22100)
+    protected BiquadFilter(IAudioProvider provider, double frequency = 22100)
         : base(provider, 2, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
@@ -45,7 +46,7 @@ public class BiquadFilter : Node
         // This method should be overridden in derived classes
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

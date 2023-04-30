@@ -1,5 +1,6 @@
 ﻿using SynthesizerEngine.Core.Audio;
 using System;
+using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
@@ -21,7 +22,7 @@ public class Chorus : Node
 
     private int _bufferPos;
 
-    public Chorus(Provider provider, double delayTime = 30, uint depth = 3, float frequency = 0.1f) : base(provider, 1, 1)
+    public Chorus(IAudioProvider provider, double delayTime = 30, uint depth = 3, float frequency = 0.1f) : base(provider, 1, 1)
     {
         _oscillator = new Oscillator(provider, frequency);
 
@@ -30,14 +31,14 @@ public class Chorus : Node
 
         _buffer = new List<double>();
         _bufferPos = 0;
-        var l = AudioProvider.WaveFormat.SampleRate * 0.1;
+        var l = AudioProvider.SampleRate * 0.1;
         for (var i = 0; i < l; i++)
         {
             _buffer.Add(0.0);
         }
     }
 
-    protected override void GenerateMix()
+    public override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
@@ -56,7 +57,7 @@ public class Chorus : Node
             _oscillator.Tick();
 
             var delay = _delayTime + _oscillator.Outputs[0].Samples[0] * _depth;
-            delay *= AudioProvider.WaveFormat.SampleRate / 1000.0;
+            delay *= AudioProvider.SampleRate / 1000.0;
             delay = _bufferPos - Math.Floor(delay);
             while (delay < 0)
             {
