@@ -5,7 +5,7 @@ using SynthesizerEngine.Util;
 
 namespace SynthesizerEngine.Core;
 
-public class Scheduler : PassThroughNode
+public class Scheduler : AudioNode
 {
     private double _bpm;
     private readonly BinaryHeapPriorityQueue<SchedulerEvent> _queue;
@@ -18,7 +18,7 @@ public class Scheduler : PassThroughNode
     private double _lastBeatTime;
     private double _beatLength;
 
-    public Scheduler(IAudioProvider provider, int bpm = 120) : base(provider, 1, 1)
+    public Scheduler(IAudioProvider provider, int bpm = 120) : base(provider, 1, 1, isVirtual: true)
     {
         _bpm = bpm;
         _queue = new BinaryHeapPriorityQueue<SchedulerEvent>((a, b) => a.Time.CompareTo(b.Time));

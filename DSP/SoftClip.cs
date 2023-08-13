@@ -3,14 +3,14 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class SoftClip : Node
+public class SoftClip : AudioNode
 {
     public SoftClip(IAudioProvider provider) : base(provider, 1, 1)
     {
         LinkNumberOfOutputChannels(0, 0);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

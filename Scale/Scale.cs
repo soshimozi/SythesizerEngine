@@ -9,7 +9,7 @@ public class Scale : IScale
     private readonly List<int> _degrees;
     private readonly TuningBase _tuning;
 
-    protected Scale(List<int> degrees, TuningBase? tuning = null)
+    public Scale(List<int> degrees, TuningBase? tuning = null)
     {
         _tuning = tuning ?? new EqualTemperamentTuning(12);
         _degrees = degrees;

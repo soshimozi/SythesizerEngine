@@ -40,6 +40,11 @@ public class OutputChannel : IChannel
         Connected.Remove(input);
     }
 
+    /// <summary>
+    ///   Link an output to an input, forcing the output to always contain the
+    ///   same number of channels as the input.
+    /// </summary>
+    /// <param name="input"></param>
     public void LinkNumberOfChannels(IChannel input)
     {
         _linkedInput = input;

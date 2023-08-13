@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
-public class Multiply : Node
+public class Multiply : AudioNode
 {
     protected readonly Automation Value;
 
@@ -14,7 +14,7 @@ public class Multiply : Node
         Value = new Automation(this, 1, value);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var  value = Value.GetValue();
         var input = Inputs[0];

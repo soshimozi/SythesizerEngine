@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
-public class Subtract : Node
+public class Subtract : AudioNode
 {
     private readonly Automation _value;
 
@@ -14,7 +14,7 @@ public class Subtract : Node
         _value = new Automation(this, 1, value.GetValueOrDefault(0));
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var value = _value.GetValue();
         var input = Inputs[0];

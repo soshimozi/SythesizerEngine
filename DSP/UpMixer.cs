@@ -3,14 +3,14 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class UpMixer : Node
+public class UpMixer : AudioNode
 {
     public UpMixer(IAudioProvider provider) : base(provider, 1, 1)
     {
         Outputs[0].Channels = provider.Channels;
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
-public class Divide : Node
+public class Divide : AudioNode
 {
     private readonly Automation _value;
 
@@ -14,7 +14,7 @@ public class Divide : Node
         _value = new Automation(this, 1, value.GetValueOrDefault(1));
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var value = _value.GetValue();
         var input = Inputs[0];

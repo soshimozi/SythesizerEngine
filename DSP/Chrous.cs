@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Chorus : Node
+public class Chorus : AudioNode
 {
     /*
      *
@@ -38,7 +38,7 @@ public class Chorus : Node
         }
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

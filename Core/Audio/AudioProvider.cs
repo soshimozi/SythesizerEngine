@@ -18,7 +18,7 @@ public class AudioProvider : WaveProvider32, IAudioProvider
 
     public override int Read(float[] buffer, int offset, int count)
     {
-        _device.Tick(buffer, offset, count);
+        _device.Read(buffer, offset, count);
         return count;
     }
 

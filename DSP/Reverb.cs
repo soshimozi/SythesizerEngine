@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Reverb : Node
+public class Reverb : AudioNode
 {
     private const float InitialMix = 0.33f;
     private const float FixedGain = 0.015f;
@@ -65,7 +65,7 @@ public class Reverb : Node
         }
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var mix = _mix.GetValue();
         var roomSize = _roomSize.GetValue();

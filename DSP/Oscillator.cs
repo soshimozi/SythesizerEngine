@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Oscillator : Node
+public class Oscillator : AudioNode
 {
     private readonly Automation _frequency;
     private readonly Automation _pulseWidth;
@@ -16,8 +16,6 @@ public class Oscillator : Node
 
     public Oscillator(IAudioProvider provider, float frequency = 440, WaveShape waveForm = WaveShape.Sine, float pulseWidth = 0.5f) : base(provider, 2, 1)
     {
-        LinkNumberOfOutputChannels(0, 0);
-
         _frequency = new Automation(this, 0, frequency);
         _pulseWidth = new Automation(this, 1, pulseWidth);
         _waveform = waveForm;
@@ -26,17 +24,22 @@ public class Oscillator : Node
         _p = 0.0;
     }
 
+    public void SetFrequency(double frequency)
+    {
+        _frequency.SetValue(frequency);
+    }
+
     public void SetWaveform(WaveShape waveform)
     {
         _waveform = waveform;
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var output = Outputs[0];
 
-        var pulseWidth = _pulseWidth.GetValue();
-        var frequency = _frequency.GetValue();
+        double pulseWidth = _pulseWidth; //.GetValue();
+        double frequency = _frequency; //.GetValue();
 
         output.Samples[0] = GetMix();
 

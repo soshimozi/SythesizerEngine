@@ -38,4 +38,10 @@ public class Automation
             
         return _value;
     }
+
+    // Implicit conversion from Foo to int
+    public static implicit operator double(Automation a)
+    {
+        return a.GetValue();
+    }
 }

@@ -1,16 +1,24 @@
-﻿using SynthesizerEngine.Core.Audio.Interface;
+﻿using System.Runtime.CompilerServices;
+using SynthesizerEngine.Core.Audio.Interface;
+using System.Xml.Linq;
 
 namespace SynthesizerEngine.Core.Audio;
 
-public abstract class Node : IAudioNode
+public class AudioNode : IAudioNode
 {
     public IList<IChannel> Inputs { get; }
     public IList<IChannel> Outputs { get; }
 
-    protected readonly IAudioProvider AudioProvider;
-    private readonly Action _generate;
+    public List<IAudioNode> InputPassThroughNodes { get; }
+    public List<IAudioNode> OutputPassThroughNodes { get; set; }
 
-    protected Node(IAudioProvider provider, int numberOfInputs, int numberOfOutputs, Action? generate = null)
+    public bool UsesPassThrough { get; }
+
+    protected readonly IAudioProvider AudioProvider;
+
+    private readonly bool _isVirtual;
+
+    protected AudioNode(IAudioProvider provider, int numberOfInputs, int numberOfOutputs, bool usesPassThrough = false, bool isVirtual = false)
     {
         AudioProvider = provider;
 
@@ -26,65 +34,73 @@ public abstract class Node : IAudioNode
             Outputs.Add(new OutputChannel(this, i));
         }
 
-        _generate = GenerateMix;
+        InputPassThroughNodes = new List<IAudioNode>();
+        OutputPassThroughNodes = new List<IAudioNode>();
 
-        if (generate != null)
+        _isVirtual = isVirtual;
+        UsesPassThrough = usesPassThrough;
+
+
+        if (!UsesPassThrough) return;
+
+        // need pass through nodes - be careful here.  PassThroughNode is an AudioNode, so this constructor will be called again
+        // if you always create pass through nodes it will end up in an stack overflow
+        for (var i = 0; i < numberOfInputs; i++)
         {
-            _generate = generate;
+            InputPassThroughNodes.Add(new AudioNode(AudioProvider, 1, 1, isVirtual: true));
+        }
+
+        for (var i = 0; i < numberOfOutputs; i++)
+        {
+            OutputPassThroughNodes.Add(new AudioNode(AudioProvider, 1, 1, isVirtual: true));
         }
     }
+
 
     public virtual void Connect(IAudioNode node, int outputIndex = 0, int inputIndex = 0)
     {
-        if (node is GroupNode nodeGroup)
+        if (UsesPassThrough)
         {
-            var outputPin = Outputs[outputIndex];
-            node = nodeGroup.InputPassThroughNodes[inputIndex];
-
-            var inputPin = node.Inputs[0];
-            outputPin.Connect(inputPin);
-            inputPin.Connect(outputPin);
+            var psNode = OutputPassThroughNodes[outputIndex];
+            psNode.Connect(node, 0, inputIndex);
         }
         else
         {
+            var inputPin = node.UsesPassThrough ? node.InputPassThroughNodes[inputIndex].Inputs[0] : node.Inputs[inputIndex];
             var outputPin = Outputs[outputIndex];
-            var inputPin = node.Inputs[inputIndex];
+
             outputPin.Connect(inputPin);
             inputPin.Connect(outputPin);
         }
-
 
         AudioProvider.NeedTraverse = true;
     }
 
-    public virtual void Disconnect(IAudioNode node, int output = 0, int input = 0)
+    public virtual void Disconnect(IAudioNode fromNode, int output = 0, int input = 0)
     {
-        if (node is GroupNode nodeGroup)
+        if (UsesPassThrough)
         {
-            var outputPin = Outputs[output];
-            var newNode = nodeGroup.InputPassThroughNodes[input];
-
-            var inputPin = newNode.Inputs[0];
-            inputPin.Disconnect(outputPin);
-            outputPin.Disconnect(inputPin);
+            OutputPassThroughNodes[output].Disconnect(fromNode, 0, input);
         }
         else
         {
+            var inputPin = fromNode.UsesPassThrough ? fromNode.InputPassThroughNodes[input].Inputs[0] : fromNode.Inputs[input];
             var outputPin = Outputs[output];
-            var inputPin = node.Inputs[input];
+
+
             inputPin.Disconnect(outputPin);
             outputPin.Disconnect(inputPin);
-        }
 
-        AudioProvider.NeedTraverse = true;
+            AudioProvider.NeedTraverse = true;
+        }
     }
 
     public virtual void Tick()
     {
-        CreateInputSamples();
-        CreateOutputSamples();
+        MigrateInputSamples();
+        MigrateOutputSamples();
 
-        _generate();
+        GenerateMix();
     }
 
     public virtual void Remove()
@@ -108,11 +124,25 @@ public abstract class Node : IAudioNode
                 Disconnect(input, output.Index, inputPin.Index);
             }
         }
+
+        foreach(var passThrough in InputPassThroughNodes)
+        {
+            passThrough.Remove();
+        }
+
+        foreach (var passThrough in OutputPassThroughNodes)
+        {
+            passThrough.Remove();
+        }
+
     }
 
-    public abstract void GenerateMix();
+    protected virtual void GenerateMix()
+    {
+        // do nothing by default
+    }
 
-    public virtual void CreateInputSamples()
+    protected void MigrateInputSamples()
     {
         foreach (var input in Inputs)
         {
@@ -143,8 +173,14 @@ public abstract class Node : IAudioNode
         }
     }
 
-    public virtual void CreateOutputSamples()
+    private void MigrateOutputSamples()
     {
+
+        if (_isVirtual)
+        {
+            CreateVirtualOutputSamples();
+            return;
+        }
 
         foreach (var output in Outputs)
         {
@@ -165,6 +201,40 @@ public abstract class Node : IAudioNode
             for (var j = output.Samples.Count; j < numberOfChannels; j++)
             {
                 output.Samples.Add(0);
+            }
+        }
+
+    }
+
+    private void CreateVirtualOutputSamples()
+    {
+        var numberOfOutputs = Outputs.Count;
+        for (var i = 0; i < numberOfOutputs; i++)
+        {
+            var input = Inputs[i];
+            var output = Outputs[i];
+
+            if (input.Samples.Count != 0)
+            {
+                output.Samples = input.Samples;
+            }
+            else
+            {
+                var numberOfChannels = output.Channels;
+                if (output.Samples.Count == numberOfChannels)
+                {
+                    continue;
+                }
+                else if (output.Samples.Count > numberOfChannels)
+                {
+                    output.Samples.RemoveRange(numberOfChannels, output.Samples.Count - numberOfChannels);
+                    continue;
+                }
+
+                for (var j = output.Samples.Count; j < numberOfChannels; j++)
+                {
+                    output.Samples.Add(0);
+                }
             }
         }
     }
@@ -189,6 +259,12 @@ public abstract class Node : IAudioNode
         Outputs[output].Channels = numberOfChannels;
     }
 
+    /// <summary>
+    ///  Link an output to an input, forcing the output to always contain the
+    ///  same number of channels as the input.
+    /// </summary>
+    /// <param name="output"></param>
+    /// <param name="input"></param>
     protected void LinkNumberOfOutputChannels(int output, int input)
     {
         Outputs[output].LinkNumberOfChannels(Inputs[input]);

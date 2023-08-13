@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class BitCrusher : Node
+public class BitCrusher : AudioNode
 {
     private readonly Automation _bits;
     public BitCrusher(IAudioProvider provider, int bits = 8) : base(provider, 2, 1)
@@ -13,7 +13,7 @@ public class BitCrusher : Node
         _bits = new Automation(this, 1, bits);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
 

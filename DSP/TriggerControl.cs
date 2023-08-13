@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class TriggerControl : Node
+public class TriggerControl : AudioNode
 {
     private readonly Automation _trigger;
 
@@ -13,7 +13,7 @@ public class TriggerControl : Node
         _trigger = new Automation(this, null, trigger);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         if (_trigger.GetValue() > 0)
         {

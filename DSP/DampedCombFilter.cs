@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class DampedCombFilter: Node
+public class DampedCombFilter: AudioNode
 {
     private readonly Automation _delayTime;
     private readonly Automation _decayTime;
@@ -31,7 +31,7 @@ public class DampedCombFilter: Node
 
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

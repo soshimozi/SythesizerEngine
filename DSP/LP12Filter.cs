@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class LP12Filter : Node
+public class LP12Filter : AudioNode
 {
     private readonly Automation _cutoff;
     private readonly Automation _resonance;
@@ -30,7 +30,7 @@ public class LP12Filter : Node
         _previousResonance = resonance;
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

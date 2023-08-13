@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class CrossFade : Node
+public class CrossFade : AudioNode
 {
     private readonly Automation _position;
     public CrossFade(IAudioProvider provider, double position = 0.5) : base(provider, 3, 1)
@@ -13,7 +13,7 @@ public class CrossFade : Node
         _position = new Automation(this, 2, position);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var inputA = Inputs[0];
         var inputB = Inputs[1];

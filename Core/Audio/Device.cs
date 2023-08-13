@@ -3,7 +3,7 @@
 namespace SynthesizerEngine.Core.Audio;
 
 
-public class Device : Node
+public class Device : AudioNode
 {
     private List<IAudioNode> _nodes;
 
@@ -15,7 +15,7 @@ public class Device : Node
         _nodes = new List<IAudioNode>();
     }
 
-    public void Tick(float[] buffer, int offset, int sampleCount)
+    public void Read(float[] buffer, int offset, int sampleCount)
     {
         var input = Inputs[0];
 
@@ -32,7 +32,7 @@ public class Device : Node
                 _nodes[j].Tick();
             }
 
-            CreateInputSamples();
+            MigrateInputSamples();
 
 
             for (var j = 0; j < AudioProvider.Channels; j++)
@@ -47,10 +47,5 @@ public class Device : Node
     public int GetWriteTime()
     {
         return _writePosition;
-    }
-
-    public override void GenerateMix()
-    {
-        // do nothing
     }
 }

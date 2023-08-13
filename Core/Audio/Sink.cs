@@ -3,17 +3,16 @@ using SynthesizerEngine.DSP;
 
 namespace SynthesizerEngine.Core.Audio;
 
-public class Sink : GroupNode
+public class Sink : AudioNode
 {
-    private readonly UpMixer _mixer;
-    public Sink(IAudioProvider provider, Device device, Scheduler scheduler) : base(provider, 1, 0)
+    public Sink(IAudioProvider provider, IAudioNode device, IAudioNode scheduler) : base(provider, 1, 0, true)
     {
-        _mixer = new UpMixer(provider);
+        var mixer = new UpMixer(provider);
 
-        (InputPassThroughNodes[0] as PassThroughNode)?.Connect(scheduler);
+        InputPassThroughNodes[0].Connect(scheduler, 0, 0);
 
-        scheduler.Connect(_mixer);
-        _mixer.Connect(device);
+        scheduler.Connect(mixer, 0, 0);
+        mixer.Connect(device);
     }
 
     public override string ToString()

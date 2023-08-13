@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Distortion : Node
+public class Distortion : AudioNode
 {
     private readonly Automation _overdrive;
     private readonly Automation _masterGain;
@@ -31,7 +31,7 @@ public class Distortion : Node
 
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         
         var input = Inputs[0];

@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Pan : Node
+public class Pan : AudioNode
 {
     private readonly Automation _pan;
 
@@ -15,7 +15,7 @@ public class Pan : Node
         _pan = new Automation(this, 1, pan);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

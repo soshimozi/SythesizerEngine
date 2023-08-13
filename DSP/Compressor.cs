@@ -5,7 +5,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Compressor : Node
+public class Compressor : AudioNode
 {
     private readonly Automation _scaleBy;
     private readonly Automation _gain;
@@ -18,7 +18,7 @@ public class Compressor : Node
         _scaleBy = new Automation(this, 2, scaleBy);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

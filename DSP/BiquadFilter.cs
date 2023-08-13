@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class BiquadFilter : Node
+public class BiquadFilter : AudioNode
 {
     private readonly Automation _frequency;
 
@@ -46,14 +46,14 @@ public class BiquadFilter : Node
         // This method should be overridden in derived classes
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
         var xValueArray = _xValues;
         var yValueArray = _yValues;
 
-        var frequency = (float) _frequency.GetValue();
+        var frequency = (float)(double) _frequency;
 
         // frequency != _lastFrequency
         if (Math.Abs(frequency - _lastFrequency) > double.Epsilon)

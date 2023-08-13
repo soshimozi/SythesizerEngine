@@ -22,7 +22,7 @@ namespace SynthesizerEngine.DSP;
 /// - lag The 60dB lag time.Linked to input 1.
 ///
 /// </summary>
-public class Lag : Node
+public class Lag : AudioNode
 {
     private readonly Automation _value;
     private readonly Automation _lag;
@@ -41,7 +41,7 @@ public class Lag : Node
 
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

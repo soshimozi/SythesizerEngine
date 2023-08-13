@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
-public class MulAdd : Node
+public class MulAdd : AudioNode
 {
     private readonly Automation _mul;
     private readonly Automation _add;
@@ -16,7 +16,7 @@ public class MulAdd : Node
         _add = new Automation(this, 2, add.GetValueOrDefault(0));
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

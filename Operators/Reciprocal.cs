@@ -3,7 +3,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
-public class Reciprocal : Node
+public class Reciprocal : AudioNode
 {
 
     public Reciprocal(IAudioProvider provider) : base(provider, 1, 1)
@@ -11,7 +11,7 @@ public class Reciprocal : Node
         LinkNumberOfOutputChannels(0, 0);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var numberOfChannels = input.Samples.Count;

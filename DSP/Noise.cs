@@ -3,7 +3,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Noise : Node
+public class Noise : AudioNode
 {
     private readonly Random _random;
     private NoiseColor _color;
@@ -13,7 +13,7 @@ public class Noise : Node
         Reset(color);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         //var nextValue = _random.NextDouble();
         Outputs[0].Samples[0] = (float) GetValue();

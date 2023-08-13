@@ -28,7 +28,7 @@ namespace SynthesizerEngine.DSP;
 /// 
 ///
 /// </summary>
-public class Limiter : Node
+public class Limiter : AudioNode
 {
     private readonly List<double> _followers = new List<double>();
     private readonly Automation _threshold;
@@ -45,7 +45,7 @@ public class Limiter : Node
         _release = new Automation(this, 2, release);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];

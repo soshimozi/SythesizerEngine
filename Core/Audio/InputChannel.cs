@@ -12,6 +12,11 @@ public class InputChannel : IChannel
     public int TotalWriteTime { get; }
     public List<double> Samples { get; set; }
 
+    public void LinkNumberOfChannels(IChannel input)
+    {
+        throw new NotImplementedException();
+    }
+
     public InputChannel(IAudioNode node, int index)
     {
         Node = node;
@@ -34,16 +39,6 @@ public class InputChannel : IChannel
         }
     }
 
-    public void LinkNumberOfChannels(IChannel input)
-    {
-        throw new NotImplementedException();
-    }
-
     public bool NeedTraverse { get; set; }
     public int SampleRate { get; }
-
-    public int GetNumberOfChannels()
-    {
-        throw new NotImplementedException();
-    }
 }

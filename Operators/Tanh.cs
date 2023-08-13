@@ -3,7 +3,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.Operators;
 
-public class Tanh : Node
+public class Tanh : AudioNode
 {
 
     public Tanh(IAudioProvider provider) : base(provider, 1, 1)
@@ -11,7 +11,7 @@ public class Tanh : Node
         LinkNumberOfOutputChannels(0, 0);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var numberOfChannels = input.Samples.Count;

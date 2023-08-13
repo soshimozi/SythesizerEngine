@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class DCFilter : Node
+public class DCFilter : AudioNode
 {
     private readonly Automation _coefficient;
 
@@ -19,7 +19,7 @@ public class DCFilter : Node
         _coefficient = new Automation(this, 1, coefficient);
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var coefficient = _coefficient.GetValue();
         var input = Inputs[0];

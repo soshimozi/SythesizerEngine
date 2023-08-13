@@ -4,7 +4,7 @@ using SynthesizerEngine.Core;
 
 namespace SynthesizerEngine.Operators;
 
-public class Constant : Node
+public class Constant : AudioNode
 {
     private readonly Automation _value;
 
@@ -14,7 +14,7 @@ public class Constant : Node
         _value = new Automation(this, 0, value.GetValueOrDefault(1));
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var value = _value.GetValue();
         var numberOfChannels = AudioProvider.Channels;

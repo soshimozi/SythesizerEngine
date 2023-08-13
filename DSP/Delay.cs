@@ -4,7 +4,7 @@ using SynthesizerEngine.Core.Audio.Interface;
 
 namespace SynthesizerEngine.DSP;
 
-public class Delay : Node
+public class Delay : AudioNode
 {
     private readonly double _maximumDelayTime;
     private readonly Automation _delayTime;
@@ -23,7 +23,7 @@ public class Delay : Node
         _readWriteIndex = 0;
     }
 
-    public override void GenerateMix()
+    protected override void GenerateMix()
     {
         var input = Inputs[0];
         var output = Outputs[0];
